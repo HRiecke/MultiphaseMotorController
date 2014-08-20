@@ -20,7 +20,6 @@ namespace FT245B
 
         // Define an Event based on the above Delegate
         public event LogHandler LogMsg;
-        private int sleep;
         private bool inverse;
 
         private void Write(int item)

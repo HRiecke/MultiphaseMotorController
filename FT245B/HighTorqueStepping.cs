@@ -13,13 +13,13 @@ namespace FT245B
         int[] roundNCM = new int[] { 12, 12, 13, 9, 11, 3, 7, 6 };
         int[] roundNCCM = new int[] { 6, 7, 3, 11, 9, 13, 12, 14 };
 
-        public void Start()
+        public new void Start()
         {
             Log("Start HighTorqueStepping");
             InitBase();
         }
 
-        public void Stop()
+        public new void Stop()
         {
             base.Stop();
         }
