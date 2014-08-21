@@ -43,10 +43,10 @@
             // lineShape1
             // 
             this.lineShape1.Name = "lineShape1";
-            this.lineShape1.X1 = 44;
-            this.lineShape1.X2 = 119;
-            this.lineShape1.Y1 = 61;
-            this.lineShape1.Y2 = 84;
+            this.lineShape1.X1 = 50;
+            this.lineShape1.X2 = 107;
+            this.lineShape1.Y1 = 52;
+            this.lineShape1.Y2 = 109;
             // 
             // ovalShape8
             // 
