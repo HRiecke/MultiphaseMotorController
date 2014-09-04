@@ -1,4 +1,5 @@
-﻿namespace FT245B
+﻿using System;
+namespace FT245B
 {
     partial class MainForm
     {
@@ -15,10 +16,16 @@
         {
             if (disposing && (components != null))
             {
-                components.Dispose();
-                // Close our device
-                ftStatus = myFtdiDevice.Close();
+               components.Dispose();                         
              }
+
+            if (stepMode != null)
+            {
+                stepMode.LogMsg -= Log;
+                stepMode.Stop();
+                ((IDisposable)stepMode).Dispose();
+                stepMode = null;
+            }
             base.Dispose(disposing);
         }
 
@@ -33,18 +40,20 @@
             this.log = new System.Windows.Forms.ListBox();
             this.Start = new System.Windows.Forms.Button();
             this.Stop = new System.Windows.Forms.Button();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.radioButtonHTStep = new System.Windows.Forms.RadioButton();
+            this.radioButtonSingelStepping = new System.Windows.Forms.RadioButton();
             this.radioButton3 = new System.Windows.Forms.RadioButton();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
-            this.userControl11 = new FT245B.UserControl1();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.radioButtonCCW = new System.Windows.Forms.RadioButton();
+            this.radioButtonCW = new System.Windows.Forms.RadioButton();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // log
@@ -53,14 +62,14 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.log.FormattingEnabled = true;
-            this.log.Location = new System.Drawing.Point(12, 313);
+            this.log.Location = new System.Drawing.Point(12, 160);
             this.log.Name = "log";
-            this.log.Size = new System.Drawing.Size(550, 95);
+            this.log.Size = new System.Drawing.Size(356, 160);
             this.log.TabIndex = 0;
             // 
             // Start
             // 
-            this.Start.Location = new System.Drawing.Point(155, 255);
+            this.Start.Location = new System.Drawing.Point(214, 112);
             this.Start.Name = "Start";
             this.Start.Size = new System.Drawing.Size(75, 23);
             this.Start.TabIndex = 2;
@@ -70,7 +79,8 @@
             // 
             // Stop
             // 
-            this.Stop.Location = new System.Drawing.Point(236, 255);
+            this.Stop.Enabled = false;
+            this.Stop.Location = new System.Drawing.Point(295, 112);
             this.Stop.Name = "Stop";
             this.Stop.Size = new System.Drawing.Size(75, 23);
             this.Stop.TabIndex = 3;
@@ -78,20 +88,9 @@
             this.Stop.UseVisualStyleBackColor = true;
             this.Stop.Click += new System.EventHandler(this.stop_Click);
             // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.ForeColor = System.Drawing.Color.Black;
-            this.checkBox1.Location = new System.Drawing.Point(15, 12);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(61, 17);
-            this.checkBox1.TabIndex = 7;
-            this.checkBox1.Text = "Inverse";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            // 
             // numericUpDown1
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(47, 67);
+            this.numericUpDown1.Location = new System.Drawing.Point(70, 64);
             this.numericUpDown1.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -105,103 +104,127 @@
             0,
             0,
             0});
+            this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 67);
+            this.label1.Location = new System.Drawing.Point(4, 66);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(30, 13);
+            this.label1.Size = new System.Drawing.Size(60, 13);
             this.label1.TabIndex = 9;
-            this.label1.Text = "Time";
+            this.label1.Text = "Speed (ms)";
             // 
             // checkBox2
             // 
             this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(15, 284);
+            this.checkBox2.Location = new System.Drawing.Point(12, 141);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(40, 17);
             this.checkBox2.TabIndex = 10;
             this.checkBox2.Text = "log";
             this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
             // 
-            // radioButton1
+            // radioButtonHTStep
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Checked = true;
-            this.radioButton1.Location = new System.Drawing.Point(6, 20);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(123, 17);
-            this.radioButton1.TabIndex = 11;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "HighTorqueStepping";
-            this.radioButton1.UseVisualStyleBackColor = true;
-            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            this.radioButtonHTStep.AutoSize = true;
+            this.radioButtonHTStep.Location = new System.Drawing.Point(6, 45);
+            this.radioButtonHTStep.Name = "radioButtonHTStep";
+            this.radioButtonHTStep.Size = new System.Drawing.Size(129, 17);
+            this.radioButtonHTStep.TabIndex = 11;
+            this.radioButtonHTStep.Text = "High Torque Stepping";
+            this.radioButtonHTStep.UseVisualStyleBackColor = true;
+            this.radioButtonHTStep.CheckedChanged += new System.EventHandler(this.radioButtonHTStep_CheckedChanged);
             // 
-            // radioButton2
+            // radioButtonSingelStepping
             // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(6, 44);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(85, 17);
-            this.radioButton2.TabIndex = 12;
-            this.radioButton2.Text = "radioButton2";
-            this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            this.radioButtonSingelStepping.AutoSize = true;
+            this.radioButtonSingelStepping.Location = new System.Drawing.Point(6, 22);
+            this.radioButtonSingelStepping.Name = "radioButtonSingelStepping";
+            this.radioButtonSingelStepping.Size = new System.Drawing.Size(79, 17);
+            this.radioButtonSingelStepping.TabIndex = 12;
+            this.radioButtonSingelStepping.Text = "Single Step";
+            this.radioButtonSingelStepping.UseVisualStyleBackColor = true;
+            this.radioButtonSingelStepping.CheckedChanged += new System.EventHandler(this.radioButtonHTStep_CheckedChanged);
             // 
             // radioButton3
             // 
             this.radioButton3.AutoSize = true;
             this.radioButton3.Location = new System.Drawing.Point(6, 68);
             this.radioButton3.Name = "radioButton3";
-            this.radioButton3.Size = new System.Drawing.Size(85, 17);
+            this.radioButton3.Size = new System.Drawing.Size(69, 17);
             this.radioButton3.TabIndex = 13;
-            this.radioButton3.Text = "radioButton3";
+            this.radioButton3.Text = "Half Step";
             this.radioButton3.UseVisualStyleBackColor = true;
-            this.radioButton3.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
-            // 
-            // checkBox3
-            // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(15, 35);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(51, 17);
-            this.checkBox3.TabIndex = 14;
-            this.checkBox3.Text = "CCW";
-            this.checkBox3.UseVisualStyleBackColor = true;
-            this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
-            // 
-            // userControl11
-            // 
-            this.userControl11.Location = new System.Drawing.Point(355, 118);
-            this.userControl11.Name = "userControl11";
-            this.userControl11.Size = new System.Drawing.Size(160, 160);
-            this.userControl11.TabIndex = 5;
+            this.radioButton3.CheckedChanged += new System.EventHandler(this.radioButtonHTStep_CheckedChanged);
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.radioButton3);
-            this.groupBox1.Controls.Add(this.radioButton1);
-            this.groupBox1.Controls.Add(this.radioButton2);
-            this.groupBox1.Location = new System.Drawing.Point(355, 12);
+            this.groupBox1.Controls.Add(this.radioButtonHTStep);
+            this.groupBox1.Controls.Add(this.radioButtonSingelStepping);
+            this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(176, 94);
             this.groupBox1.TabIndex = 15;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Step Mode";
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(30, 161);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(0, 13);
+            this.label2.TabIndex = 16;
+            // 
+            // radioButtonCCW
+            // 
+            this.radioButtonCCW.AutoSize = true;
+            this.radioButtonCCW.Location = new System.Drawing.Point(6, 42);
+            this.radioButtonCCW.Name = "radioButtonCCW";
+            this.radioButtonCCW.Size = new System.Drawing.Size(50, 17);
+            this.radioButtonCCW.TabIndex = 18;
+            this.radioButtonCCW.TabStop = true;
+            this.radioButtonCCW.Text = "CCW";
+            this.radioButtonCCW.UseVisualStyleBackColor = true;
+            this.radioButtonCCW.CheckedChanged += new System.EventHandler(this.radioButtonCCW_CheckedChanged);
+            // 
+            // radioButtonCW
+            // 
+            this.radioButtonCW.AutoSize = true;
+            this.radioButtonCW.Location = new System.Drawing.Point(6, 19);
+            this.radioButtonCW.Name = "radioButtonCW";
+            this.radioButtonCW.Size = new System.Drawing.Size(43, 17);
+            this.radioButtonCW.TabIndex = 19;
+            this.radioButtonCW.TabStop = true;
+            this.radioButtonCW.Text = "CW";
+            this.radioButtonCW.UseVisualStyleBackColor = true;
+            this.radioButtonCW.CheckedChanged += new System.EventHandler(this.radioButtonCCW_CheckedChanged);
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.numericUpDown1);
+            this.groupBox2.Controls.Add(this.radioButtonCW);
+            this.groupBox2.Controls.Add(this.radioButtonCCW);
+            this.groupBox2.Controls.Add(this.label1);
+            this.groupBox2.Location = new System.Drawing.Point(194, 12);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(176, 94);
+            this.groupBox2.TabIndex = 20;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Step Mode Details";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(574, 416);
+            this.ClientSize = new System.Drawing.Size(380, 331);
+            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.checkBox3);
             this.Controls.Add(this.checkBox2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.numericUpDown1);
-            this.Controls.Add(this.checkBox1);
-            this.Controls.Add(this.userControl11);
             this.Controls.Add(this.Stop);
             this.Controls.Add(this.Start);
             this.Controls.Add(this.log);
@@ -210,6 +233,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -220,16 +245,17 @@
         private System.Windows.Forms.ListBox log;
         private System.Windows.Forms.Button Start;
         private System.Windows.Forms.Button Stop;
-        private UserControl1 userControl11;
-        private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox checkBox2;
-        private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.RadioButton radioButtonHTStep;
+        private System.Windows.Forms.RadioButton radioButtonSingelStepping;
         private System.Windows.Forms.RadioButton radioButton3;
-        private System.Windows.Forms.CheckBox checkBox3;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.RadioButton radioButtonCCW;
+        private System.Windows.Forms.RadioButton radioButtonCW;
+        private System.Windows.Forms.GroupBox groupBox2;
     }
 }
 

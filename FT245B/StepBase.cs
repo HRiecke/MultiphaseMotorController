@@ -8,9 +8,18 @@ using System.Windows.Forms;
 
 namespace FT245B
 {
+    /// <summary>
+    /// This shute be a base clas for all step modes.
+    /// This class initilise teh communicont to USB interface.
+    /// </summary>
     public abstract class StepBase: IDisposable,IStepMode
     {
         Thread thread;
+        // Volatile is used as hint to the compiler that this data
+        // member will be accessed by multiple threads.
+        private volatile bool _shouldStop;
+        // Flag: Has Dispose already been called?
+        bool disposed = false;
 
         FTDI.FT_STATUS ftStatus;
         FTDI myFtdiDevice = null;
@@ -21,16 +30,52 @@ namespace FT245B
         // Define an Event based on the above Delegate
         public event LogHandler LogMsg;
         private bool inverse;
+        private bool isCW = true;
+        //set up the SynchronizationContext
+        SynchronizationContext context;
 
+        public StepBase()
+        {
+            context = SynchronizationContext.Current;
+        }
+
+        // Protected implementation of Dispose pattern.
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+            if (disposing)
+            {
+                // Free any other managed objects here.
+                //
+                DisposeThread();
+                myFtdiDevice.Close();
+                myFtdiDevice = null;
+            }
+
+            // Free any unmanaged objects here.
+            //
+            disposed = true;
+        }
+
+
+        // Public implementation of Dispose pattern callable by consumers.
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+        /// <summary>
+        /// Get the step mode name.
+        /// </summary>
+        public string StepName { get { return "StepBase Clase"; } }
+        
         private void Write(int item)
         {
             uint writtenLength = 0;
             byte[] step = { Convert.ToByte(item) };
             if (myFtdiDevice == null) return;
             ftStatus = myFtdiDevice.Write(step, step.Length, ref writtenLength);
-
-            //if (checkBox2.Checked == true)
-              //  return;
 
             if (ftStatus == FTDI.FT_STATUS.FT_OK)
                 Log("Seted Write item = " + item);
@@ -42,17 +87,8 @@ namespace FT245B
         {
             try
             {
-         //       context.Send(new SendOrPostCallback(delegate(object state)
-                //{
-                    int bla = Math.Abs(15 - (int)item);
-                    Write(bla);
-
-                 //   if (checkBox2.Checked == true)
-                   //     return;
-               //     this.userControl11.writeLED((int)item);
-             //       this.Refresh();
-
-           //     }), null);
+                int stepValue = Math.Abs(15 - (int)item);
+                Write(stepValue);
             }
             catch (InvalidOperationException oex)
             {
@@ -64,7 +100,20 @@ namespace FT245B
         protected void Log(string text)
         {
             if (LogMsg != null)
-                LogMsg(text);
+            {
+                try
+                {
+                    context.Send(new SendOrPostCallback(delegate(object state)
+                    {
+                        LogMsg(text);
+
+                    }), null);
+                }
+                catch (InvalidOperationException oex)
+                {
+                    MessageBox.Show(oex.Message);
+                }                
+            }
         }
 
         protected void InitBase()
@@ -158,31 +207,48 @@ namespace FT245B
 
         private void OneRound()
         {
-            if (inverse == true)
+            while (_shouldStop == false)
             {
-                OneRoundCM();
-            }
-            else {
-                OneRoundCCM();
+                int[] array;
+                if (isCW == true)
+                {
+                    array = RoundCM;
+                }
+                else
+                {
+                    array = RoundCCM;
+                }
+
+                foreach (int item in array)
+                {
+                    if (inverse == true)
+                        Do(item ^ 15);
+                    else
+                        Do(item);
+                    Thread.Sleep(Sleep);
+                }
             }
         }
 
-        protected abstract void OneRoundCM();
-        protected abstract void OneRoundCCM();
+        protected abstract int[] RoundCM {get;}
+        protected abstract int[] RoundCCM { get; }       
 
         private void DisposeThread()
         {
             if (thread != null)
             {
-                thread.Abort();
+                _shouldStop = true;
+                bool isThreadExit = thread.Join(2*Sleep);
+                if (isThreadExit == false)
+                    thread.Abort();
+
                 thread = null;
             }
         }
 
-        public void Dispose()
-        {
-            DisposeThread();
-        }
+        #region IStepMode
+
+        public int Sleep { get; set; }
 
         public void Start()
         {
@@ -194,12 +260,21 @@ namespace FT245B
             DisposeThread();
         }
 
-        public int Sleep { get; set; }
-
         public bool Inverse
         {
             protected get { return inverse; }
             set { inverse=value; }
-        }        
+        }
+
+        /// <summary>
+        /// Get or Set here state of clockwise (true) or counterclockwise (CCW)
+        /// </summary>
+        public bool IsCW
+        {
+            get { return isCW; }
+            set { isCW = value; }
+        }
+
+        #endregion
     }
 }
