@@ -1,0 +1,8 @@
+C:\Users\Heiko\Desktop\Programmierung\FT245B\LCD_over_FT245B\obj\Debug\LCD_over_FT245B.csprojResolveAssemblyReference.cache
+C:\Users\Heiko\Desktop\Programmierung\FT245B\LCD_over_FT245B\obj\Debug\LCD_over_FT245B.Properties.Resources.resources
+C:\Users\Heiko\Desktop\Programmierung\FT245B\LCD_over_FT245B\obj\Debug\LCD_over_FT245B.csproj.GenerateResource.Cache
+C:\Users\Heiko\Desktop\Programmierung\FT245B\LCD_over_FT245B\bin\Debug\LCD_over_FT245B.exe.config
+C:\Users\Heiko\Desktop\Programmierung\FT245B\LCD_over_FT245B\bin\Debug\LCD_over_FT245B.exe
+C:\Users\Heiko\Desktop\Programmierung\FT245B\LCD_over_FT245B\bin\Debug\LCD_over_FT245B.pdb
+C:\Users\Heiko\Desktop\Programmierung\FT245B\LCD_over_FT245B\obj\Debug\LCD_over_FT245B.exe
+C:\Users\Heiko\Desktop\Programmierung\FT245B\LCD_over_FT245B\obj\Debug\LCD_over_FT245B.pdb
