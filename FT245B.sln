@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LCD_over_FT245B", "LCD_over
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApplication1", "WindowsFormsApplication1\WindowsFormsApplication1.csproj", "{506590FE-60DD-4761-9D80-D05EA44DAC05}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FT245B_2_WPF", "FT245B_2_WPF\FT245B_2_WPF.csproj", "{8CDD7D4F-5B3D-40BE-B064-5E715F0A1E21}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,16 @@ Global
 		{506590FE-60DD-4761-9D80-D05EA44DAC05}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{506590FE-60DD-4761-9D80-D05EA44DAC05}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{506590FE-60DD-4761-9D80-D05EA44DAC05}.Release|x86.ActiveCfg = Release|Any CPU
+		{8CDD7D4F-5B3D-40BE-B064-5E715F0A1E21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CDD7D4F-5B3D-40BE-B064-5E715F0A1E21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CDD7D4F-5B3D-40BE-B064-5E715F0A1E21}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{8CDD7D4F-5B3D-40BE-B064-5E715F0A1E21}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{8CDD7D4F-5B3D-40BE-B064-5E715F0A1E21}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8CDD7D4F-5B3D-40BE-B064-5E715F0A1E21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CDD7D4F-5B3D-40BE-B064-5E715F0A1E21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CDD7D4F-5B3D-40BE-B064-5E715F0A1E21}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{8CDD7D4F-5B3D-40BE-B064-5E715F0A1E21}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{8CDD7D4F-5B3D-40BE-B064-5E715F0A1E21}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
